@@ -62,7 +62,15 @@ export default function Terminal() {
               <div className="chat-unit" key={key}>
                 <div className={`chat chat-${message.type}`}>
                   <div className="user-logo">
-                    <img alt="User Avatar" src={message.user_logo} />
+                    <img
+                      alt="User Avatar"
+                      src={
+                        message.type == "send"
+                          ? JSON.parse(localStorage.getItem("chat_room_user"))
+                              ?.avatar || message.user_logo
+                          : message.user_logo
+                      }
+                    />
                   </div>
                   <div className="user-message">{message.message}</div>
                   <div className="user-time">{message.time}</div>

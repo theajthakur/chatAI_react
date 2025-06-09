@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 
-const CLIENT_ID = import.meta.env.GOOGLE_CLIENT;
+const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT;
+const apiURL = import.meta.env.VITE_API_URL;
 
 export default function GoogleLogin({ onLoginSuccess }) {
   useEffect(() => {
@@ -29,7 +30,7 @@ export default function GoogleLogin({ onLoginSuccess }) {
 
   function handleCredentialResponse(response) {
     const idToken = response.credential;
-    fetch("/api/auth/google", {
+    fetch(`${apiURL}/api/auth/google`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token: idToken }),

@@ -1,12 +1,45 @@
-# React + Vite
+# 🤖 AI Chat Rooms
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, secure, and real-time AI-based chat application where users can create and join custom chat rooms with optional password protection. Messages are handled via WebSockets, and users authenticate via Google. Designed for speed, simplicity, and collaboration.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## Expanding the ESLint configuration
+- 🔐 **Custom Room Creation** with or without password
+- 🌐 **Room Access via Link** (password-protected or public)
+- 👤 **Google Authentication** (name and avatar used in chat)
+- 💬 **Real-time Messaging** via WebSockets
+- 🧠 **AI Message Intelligence** _(optional enhancement)_
+- ⏳ **Temporary Chat Storage** (rooms are short-lived)
+- 🛠️ **Admin Controls** (disband room)
+- 📱 **Responsive Design** with Bootstrap 5
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 📸 Screenshots
+
+| Homepage                    | Join Room Page              | Chat Interface              |
+| --------------------------- | --------------------------- | --------------------------- |
+| ![](./screenshots/home.png) | ![](./screenshots/join.png) | ![](./screenshots/chat.png) |
+
+---
+
+## 🛠 Tech Stack
+
+- **Frontend**: React, Bootstrap 5, Bootstrap Icons
+- **Backend**: Node.js + Express _(planned)_
+- **Realtime**: WebSocket (Socket.IO or native WebSocket)
+- **Auth**: Google OAuth
+- **Storage**: Temporary in-memory store or Redis (optional)
+
+---
+
+## 📦 Installation
+
+```bash
+git clone https://github.com/yourusername/ai-chat-rooms.git
+cd ai-chat-rooms
+npm install
+npm run dev
+```

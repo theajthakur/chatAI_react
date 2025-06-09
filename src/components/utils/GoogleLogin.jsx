@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
+import { notyf } from "./notyf";
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT;
 const apiURL = import.meta.env.VITE_API_URL;
 
-export default function GoogleLogin({ onLoginSuccess }) {
+export default function GoogleLogin({ setIsLogin }) {
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://accounts.google.com/gsi/client";
@@ -28,20 +29,27 @@ export default function GoogleLogin({ onLoginSuccess }) {
     };
   }, []);
 
-  function handleCredentialResponse(response) {
+  async function handleCredentialResponse(response) {
     const idToken = response.credential;
-    fetch(`${apiURL}/api/auth/google`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: idToken }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        localStorage.setItem("token", data.jwt);
-        onLoginSuccess(data.user);
-      })
-      .catch(() => alert("Google login failed"));
+    try {
+      const res = await fetch(`${apiURL}/api/auth/google`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: idToken }),
+      });
+
+      const data = await res.json();
+      localStorage.setItem("chat_room_token", data.signToken);
+      localStorage.setItem("chat_room_user", JSON.stringify(data.data));
+      setIsLogin(true);
+    } catch (error) {
+      notyf.error(error.message || "Something went wrong!");
+    }
   }
 
-  return <div id="google-signin-button"></div>;
+  return (
+    <div className="d-flex justify-content-center">
+      <div id="google-signin-button"></div>
+    </div>
+  );
 }

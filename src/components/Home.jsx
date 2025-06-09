@@ -2,6 +2,7 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "../assets/css/home.css";
+import { Link } from "react-router-dom";
 
 export default function Home() {
   return (
@@ -13,9 +14,25 @@ export default function Home() {
         <p className="lead mb-4">
           Create secure, smart chat rooms powered by AI & real-time WebSockets.
         </p>
-        <a href="#how-it-works" className="btn btn-primary btn-lg">
-          Learn How It Works
-        </a>
+        <div className="row">
+          <div className="col-sm-12 my-2">
+            <a
+              href="#how-it-works"
+              className="w-100 btn btn-outline-primary btn-lg"
+            >
+              About
+            </a>
+          </div>
+          <div className="col-sm-12 my-2">
+            <Link
+              to="/chat"
+              style={{ whiteSpace: "nowrap" }}
+              className="w-100 btn btn-success btn-lg"
+            >
+              Start Chat
+            </Link>
+          </div>
+        </div>
       </section>
 
       <section id="how-it-works" className="py-5 bg-secondary text-light">

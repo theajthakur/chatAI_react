@@ -5,15 +5,22 @@ import "animate.css";
 
 import { useState } from "react";
 import "./App.css";
-import GoogleLogin from "./components/utils/GoogleLogin";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Terminal from "./components/Terminal";
+import Home from "./components/Home";
+import NotFound from "./components/NotFound";
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
-    <>
-      <GoogleLogin />
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/chat/:roomid" element={<Terminal />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

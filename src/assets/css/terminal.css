@@ -1,97 +1,130 @@
 .terminal-container {
+  background: url(/assets/images/ghost_bg.jpg) no-repeat top;
   height: 100vh;
+  background-size: cover;
   display: flex;
   justify-content: center;
-  align-items: center;
+  padding: 20px 0;
 }
 
 .terminal-container .terminal {
+  width: 500px;
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  width: 100%;
-  max-width: 600px;
-  border: 1px solid #333;
-  background-color: #1e1e1e;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+@media screen and (max-width: 500px) {
+  .terminal-container .terminal {
+    width: calc(100% - 20px);
+  }
 }
 
 .terminal-container .terminal .header {
+  padding: 5px 10px;
+  background: #fff;
   display: flex;
-  justify-content: space-between;
+  gap: 2px;
   align-items: center;
-  background-color: #222;
-  padding: 10px 15px;
-  border-bottom: 1px solid #444;
-}
-
-.terminal-container .terminal .header .left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.terminal-container .terminal .header .title {
-  font-weight: bold;
-  font-size: 18px;
-}
-
-.terminal-container .terminal .header .right button {
-  background: none;
-  border: none;
-  color: #aaa;
-  margin-left: 10px;
-  font-size: 18px;
-  cursor: pointer;
 }
 
 .terminal-container .terminal .body {
   flex: 1;
-  overflow-y: auto;
-  padding: 15px;
-  background-color: #181818;
-}
-
-.terminal-container .terminal .message {
-  margin-bottom: 15px;
-}
-
-.terminal-container .terminal .meta {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: #aaa;
-  margin-bottom: 3px;
-}
-
-.terminal-container .terminal .text {
-  background-color: #2a2a2a;
-  padding: 10px;
-  border-radius: 6px;
-  font-size: 14px;
-  color: #ddd;
 }
 
 .terminal-container .terminal .footer {
+  background: #fff;
+  padding: 5px;
+}
+
+.terminal-container .terminal .header .navigation {
+  margin-left: auto;
   display: flex;
-  border-top: 1px solid #444;
-  padding: 10px;
-  background-color: #222;
+  gap: 5px;
 }
 
-.terminal-container .terminal .footer input {
-  flex: 1;
-  padding: 8px 12px;
-  border: none;
-  background-color: #333;
-  color: #eee;
-  border-radius: 4px;
-  margin-right: 10px;
+.terminal-container .terminal .header .title {
+  font-size: 1.3rem;
 }
 
-.terminal-container .terminal .footer button {
-  background: none;
+.terminal-container .terminal .message-input {
+  display: flex;
+  gap: 5px;
+}
+
+.terminal-container .terminal .message-input .chat-input {
+  width: 100%;
   border: none;
-  color: #0af;
-  font-size: 20px;
-  cursor: pointer;
+  border-bottom: 2px solid #00000050;
+  padding: 5px 10px;
+  font-size: 1.3rem;
+  background: transparent;
+}
+
+.terminal-container .terminal .message-input .chat-send {
+  white-space: nowrap;
+  border: none;
+  background: transparent;
+}
+
+.terminal-container .terminal .message-input .chat-send span {
+  opacity: 0.8;
+}
+
+.terminal-container .terminal .message-input .chat-input:active,
+.terminal-container .terminal .message-input .chat-input:focus {
+  outline: none;
+  border: none;
+  border-bottom: 2px solid #00000080;
+}
+
+.terminal-container .terminal .body .chat-unit {
+  display: flex;
+  margin: 10px 0;
+}
+
+.terminal-container .terminal .body .chat-unit .chat-send {
+  margin-left: auto;
+  border-bottom-right-radius: 10px !important;
+  border-bottom-left-radius: 0px !important;
+  background: white !important;
+}
+
+.terminal-container .terminal .body .chat-unit .chat {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: wheat;
+  padding: 5px;
+  border-radius: 10px;
+  border-bottom-right-radius: 0px;
+  transition: 0.2s;
+  max-width: 70%;
+}
+
+.terminal-container .terminal .body .chat-unit .chat .user-logo {
+  border-radius: 50%;
+  overflow: hidden;
+  width: 30px;
+}
+
+.terminal-container .terminal .body .chat-unit .chat .user-logo img {
+  width: 100%;
+}
+
+.terminal-container .terminal .body .chat-unit .chat .user-time {
+  color: #00000080;
+  font-size: 0rem;
+  transition: 0.2s;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.terminal-container .terminal .body .chat-unit .chat:hover .user-time {
+  font-size: 0.8rem;
+}
+
+.terminal-container .terminal .body .chat-unit .chat .user-message {
+  min-width: 40px;
 }

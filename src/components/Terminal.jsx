@@ -1,9 +1,17 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "../assets/css/terminal.css";
 import { io } from "socket.io-client";
 import { useEffect, useState } from "react";
 import { authFetch } from "./utils/authFetch";
-export default function Terminal() {
+import { notyf } from "./utils/notyf";
+export default function Terminal({ isLogin }) {
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!isLogin) {
+      notyf.error("Please login first!");
+      navigate("/chat");
+    }
+  }, [isLogin, navigate]);
   const roomId = useParams("roomid");
   const roomid = roomId?.roomid;
   const [inputMessage, setInputMessage] = useState("");

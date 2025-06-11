@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function JoinRoom({ setIsLogin }) {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [roomId, setRoomId] = useState("");
   const [joinMode, setJoinMode] = useState(false);
@@ -30,7 +31,13 @@ export default function JoinRoom({ setIsLogin }) {
     );
   }
 
-  const handleNewRoomGeneration = async () => {};
+  const handleNewRoomGeneration = async () => {
+    notyf.error("Feature will be available soon!");
+  };
+  const handleRoomJoin = async () => {
+    if (!roomId) return notyf.error("Please enter a valid ID!");
+    navigate(`/chat/${roomId}`);
+  };
 
   return (
     <div className="d-flex justify-content-center align-items-center vh-100 bg-dark text-white">
@@ -85,7 +92,10 @@ export default function JoinRoom({ setIsLogin }) {
               </div>
 
               {roomId && (
-                <button className="btn btn-primary w-100">
+                <button
+                  className="btn btn-primary w-100"
+                  onClick={handleRoomJoin}
+                >
                   <i className="bi bi-box-arrow-in-right me-2"></i>Join Room
                 </button>
               )}

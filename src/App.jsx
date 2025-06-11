@@ -14,7 +14,7 @@ import JoinRoom from "./components/JoinRoom";
 import Loader from "./components/utils/Loader";
 
 function App() {
-  const [isLogin, setIsLogin] = useState(null);
+  const [isLogin, setIsLogin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     try {
@@ -24,6 +24,8 @@ function App() {
         setIsLogin(false);
         return;
       }
+      console.log(user);
+      console.log(token);
       setIsLogin(true);
     } catch (error) {
       setIsLogin(false);
@@ -45,7 +47,7 @@ function App() {
             )
           }
         />
-        <Route path="/chat/:roomid" element={<Terminal />} />
+        <Route path="/chat/:roomid" element={<Terminal isLogin={isLogin} />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

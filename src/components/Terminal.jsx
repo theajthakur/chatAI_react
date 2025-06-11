@@ -1,44 +1,42 @@
 import { useParams } from "react-router-dom";
 import "../assets/css/terminal.css";
-import { notyf } from "./utils/notyf";
-import { useState } from "react";
+import { io } from "socket.io-client";
+import { useEffect, useState } from "react";
 import { authFetch } from "./utils/authFetch";
 export default function Terminal() {
   const roomId = useParams("roomid");
+  const roomid = roomId?.roomid;
   const [inputMessage, setInputMessage] = useState("");
-  const [messages, setMessages] = useState([
-    {
-      user_logo: "https://picsum.photos/50/50?random=1",
-      message: "Hey, how are you?",
-      time: "10:15 AM",
-      type: "send",
-    },
-    {
-      user_logo: "https://picsum.photos/50/50?random=2",
-      message: "I'm good! You?",
-      time: "10:16 AM",
-      type: "receive",
-    },
-    {
-      user_logo: "https://picsum.photos/50/50?random=1",
-      message: "Doing well, thanks!",
-      time: "10:17 AM",
-      type: "send",
-    },
-    {
-      user_logo: "https://picsum.photos/50/50?random=2",
-      message: "Great to hear!",
-      time: "10:18 AM",
-      type: "receive",
-    },
-  ]);
+  const [messages, setMessages] = useState([]);
+  const apiURL = import.meta.env.VITE_API_URL;
+  const socket = io(apiURL);
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("Connected to socket server:", socket.id);
+      socket.emit("join_room", roomid);
+      socket.on("new_message", (data) => {
+        console.log(data);
+        console.log(JSON.parse(localStorage.chat_room_user)?.email);
+        if (
+          data.user?.email != JSON.parse(localStorage.chat_room_user)?.email
+        ) {
+          const msg = {
+            type: "receive",
+            time: data.time,
+            message: data.message,
+            user_logo: data.user.avatar,
+          };
+          setMessages((prev) => [...prev, msg]);
+        }
+      });
+    });
+  }, []);
   const handleSendMessage = async (e) => {
     e.preventDefault();
     const response = await authFetch("/api/chat/send", "POST", {
       roomId: roomId.roomid,
       message: inputMessage,
     });
-    console.log(response);
     if (inputMessage.trim() === "") return;
     let date = new Date().toLocaleTimeString();
     const msg = {

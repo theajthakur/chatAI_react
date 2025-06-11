@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import GoogleLogin from "./utils/GoogleLogin";
-function Auth({ setIsLogin }) {
+function Auth({ setIsLogin, setIsLoading }) {
   return (
     <div className="container-fluid vh-100 d-flex justify-content-center align-items-center bg-light">
       <div
@@ -14,7 +14,7 @@ function Auth({ setIsLogin }) {
         </div>
         <div className="row justify-content-center">
           <div className="col-sm-6 my-2 text-center">
-            <GoogleLogin setIsLogin={setIsLogin} />
+            <GoogleLogin setIsLogin={setIsLogin} setIsLoading={setIsLoading} />
           </div>
           <div className="col-sm-6 my-2 text-center">
             <Link to={"/"} className="btn btn-outline-primary w-100">

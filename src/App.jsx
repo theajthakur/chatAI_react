@@ -11,9 +11,11 @@ import Home from "./components/Home";
 import NotFound from "./components/NotFound";
 import Auth from "./components/Auth";
 import JoinRoom from "./components/JoinRoom";
+import Loader from "./components/utils/Loader";
 
 function App() {
   const [isLogin, setIsLogin] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     try {
       const token = localStorage.getItem("chat_room_token");
@@ -30,6 +32,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      {isLoading && <Loader />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route
@@ -38,7 +41,7 @@ function App() {
             isLogin ? (
               <JoinRoom setIsLogin={setIsLogin} />
             ) : (
-              <Auth setIsLogin={setIsLogin} />
+              <Auth setIsLogin={setIsLogin} setIsLoading={setIsLoading} />
             )
           }
         />

@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import "../assets/css/terminal.css";
 import { notyf } from "./utils/notyf";
 import { useState } from "react";
+import { authFetch } from "./utils/authFetch";
 export default function Terminal() {
   const roomId = useParams("roomid");
   const [inputMessage, setInputMessage] = useState("");
@@ -31,8 +32,13 @@ export default function Terminal() {
       type: "receive",
     },
   ]);
-  const handleSendMessage = (e) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
+    const response = await authFetch("/api/chat/send", "POST", {
+      roomId: roomId.roomid,
+      message: inputMessage,
+    });
+    console.log(response);
     if (inputMessage.trim() === "") return;
     let date = new Date().toLocaleTimeString();
     const msg = {

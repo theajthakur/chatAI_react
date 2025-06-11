@@ -4,7 +4,7 @@ import { notyf } from "./notyf";
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT;
 const apiURL = import.meta.env.VITE_API_URL;
 
-export default function GoogleLogin({ setIsLogin }) {
+export default function GoogleLogin({ setIsLogin, setIsLoading }) {
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://accounts.google.com/gsi/client";
@@ -31,6 +31,7 @@ export default function GoogleLogin({ setIsLogin }) {
 
   async function handleCredentialResponse(response) {
     const idToken = response.credential;
+    setIsLoading(true);
     try {
       const res = await fetch(`${apiURL}/api/auth/google`, {
         method: "POST",
@@ -39,12 +40,14 @@ export default function GoogleLogin({ setIsLogin }) {
       });
 
       const data = await res.json();
+      notyf.success(data.message);
       localStorage.setItem("chat_room_token", data.signToken);
       localStorage.setItem("chat_room_user", JSON.stringify(data.data));
       setIsLogin(true);
     } catch (error) {
       notyf.error(error.message || "Something went wrong!");
     }
+    setIsLoading(false);
   }
 
   return (

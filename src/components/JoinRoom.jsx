@@ -6,8 +6,7 @@ import { Link } from "react-router-dom";
 export default function JoinRoom({ setIsLogin }) {
   const [user, setUser] = useState(null);
   const [roomId, setRoomId] = useState("");
-  const [password, setPassword] = useState("");
-  const [askPassword, setAskPassword] = useState(false);
+  const [joinMode, setJoinMode] = useState(false);
 
   useEffect(() => {
     const data = localStorage.getItem("chat_room_user");
@@ -30,6 +29,8 @@ export default function JoinRoom({ setIsLogin }) {
       </div>
     );
   }
+
+  const handleNewRoomGeneration = async () => {};
 
   return (
     <div className="d-flex justify-content-center align-items-center vh-100 bg-dark text-white">
@@ -70,46 +71,48 @@ export default function JoinRoom({ setIsLogin }) {
             <small className="text-light">{user.email}</small>
           </div>
 
-          <div className="mb-3">
-            <label className="form-label">Room ID</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Enter Room ID"
-              value={roomId}
-              onChange={(e) => setRoomId(e.target.value)}
-            />
-          </div>
+          {joinMode ? (
+            <div className="join-room-section">
+              <div className="mb-3">
+                <label className="form-label">Room ID</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter Room ID"
+                  value={roomId}
+                  onChange={(e) => setRoomId(e.target.value)}
+                />
+              </div>
 
-          {askPassword && (
-            <div className="mb-3">
-              <label className="form-label">Password</label>
-              <input
-                type="password"
-                className="form-control"
-                placeholder="Enter Room Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              {roomId && (
+                <button className="btn btn-primary w-100">
+                  <i className="bi bi-box-arrow-in-right me-2"></i>Join Room
+                </button>
+              )}
             </div>
-          )}
-
-          <div className="form-check mb-3">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              id="togglePassword"
-              checked={askPassword}
-              onChange={() => setAskPassword(!askPassword)}
-            />
-            <label className="form-check-label" htmlFor="togglePassword">
-              Room requires password
-            </label>
-          </div>
-          {roomId && (
-            <button className="btn btn-primary w-100">
-              <i className="bi bi-box-arrow-in-right me-2"></i>Join Room
-            </button>
+          ) : (
+            <div className="user-choise">
+              <div className="row">
+                <div className="col-sm-12 my-2">
+                  <button
+                    className="w-100 btn btn-outline-light"
+                    onClick={() => {
+                      setJoinMode(true);
+                    }}
+                  >
+                    Join Room
+                  </button>
+                </div>
+                <div className="col-sm-12 my-2">
+                  <button
+                    className="w-100 btn btn-success"
+                    onClick={handleNewRoomGeneration}
+                  >
+                    Create New Room
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>

@@ -173,3 +173,15 @@
   color: #00000095;
   white-space: nowrap;
 }
+
+@media screen and (max-width: 768px) {
+  .conversation-container .sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100dvh;
+    z-index: 9;
+    background-color: #fff;
+    width: 100%;
+  }
+}

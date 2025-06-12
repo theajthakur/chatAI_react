@@ -13,7 +13,11 @@ export default function Conversation({ isLogin, isLoading }) {
   const [messages, setMessages] = useState([]);
   const apiURL = import.meta.env.VITE_API_URL;
   const socketRef = useRef(null);
+  const [summary, setSummary] = useState(null);
+  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+  const [aiChats, setAiChats] = useState([]);
+  const [sidebarVisible, setSidebarVisible] = useState(false);
 
   let user;
   try {
@@ -57,11 +61,16 @@ export default function Conversation({ isLogin, isLoading }) {
         if (data.user?.email !== user?.email) {
           const msg = {
             type: "receive",
+            name: data.user.name,
             time: data.time,
             message: data.message,
             user_logo: data.user.avatar,
           };
           setMessages((prev) => [...prev, msg]);
+          setAiChats((prev) => [
+            ...prev,
+            { name: data.user.name, message: data.message },
+          ]);
         }
       });
     });
@@ -116,6 +125,7 @@ export default function Conversation({ isLogin, isLoading }) {
     };
 
     setMessages((prev) => [...prev, msg]);
+    setAiChats((prev) => [...prev, { name: user.name, message: inputMessage }]);
     setInputMessage("");
   };
 
@@ -134,17 +144,103 @@ export default function Conversation({ isLogin, isLoading }) {
     }
   }
 
+  function extractJSON(rawString) {
+    try {
+      const clean = rawString.replace(/```json|```/g, "").trim();
+
+      return JSON.parse(clean);
+    } catch (error) {
+      console.error("Failed to parse JSON from AI response:", error);
+      return null;
+    }
+  }
+
   return (
     <div className="conversation-container" style={{ height: viewportHeight }}>
-      <div className="sidebar d-none d-md-block"></div>
+      <div
+        className={`sidebar p-3 animate__animated animate__slideInLeft ${
+          !sidebarVisible && "d-none d-md-block"
+        }`}
+        style={{
+          background: `linear-gradient(45deg, ${summary?.moodColourCode.join(
+            ","
+          )})`,
+        }}
+      >
+        <div className="action-bar mb-3 pb-3 border-bottom">
+          <button
+            className="btn btn-outline-danger mb-3 d-md-none"
+            onClick={() => {
+              setSidebarVisible(false);
+            }}
+          >
+            <span className="bi bi-arrow-left"></span> Return
+          </button>
+          {isGeneratingSummary ? (
+            <p className="text-center">✨✨✨✨✨</p>
+          ) : (
+            <div className="summarize-action">
+              <p className="text-center lead">AI Summarizer ✨</p>
+              <button
+                className="btn btn-success w-100"
+                onClick={async () => {
+                  if (aiChats.length < 10)
+                    return notyf.success("More chats required to summarize!");
+                  setIsGeneratingSummary(true);
+                  try {
+                    const response = await authFetch(
+                      "/api/chat/room/summarize",
+                      "POST",
+                      { data: aiChats }
+                    );
+                    setSummary(extractJSON(response.response));
+                    setAiChats([]);
+                  } catch (error) {
+                    console.log(error);
+                  }
+                  setIsGeneratingSummary(false);
+                }}
+              >
+                Summarize
+              </button>
+            </div>
+          )}
+        </div>
+        <div className="summary-container p-3">
+          {summary && !isGeneratingSummary && (
+            <div className="details">
+              <blockquote>
+                <b>Mood: </b> {summary.chatMood}
+              </blockquote>
+              <p className="lead">{summary.summary}</p>
+            </div>
+          )}
+        </div>
+      </div>
       <div className="main-body">
         <div className="conversation">
           <div className="header">
+            <button
+              className="sidebar-controller btn d-md-none"
+              onClick={() => {
+                setSidebarVisible(true);
+              }}
+            >
+              <span className="bi bi-list"></span>
+            </button>
             <div className="logo">
               <img src={user?.avatar} width={"100%"} />
             </div>
             <div className="title">{roomData?.name}</div>
             <div className="navigation">
+              <button
+                className="btn btn-outline-primary"
+                onClick={() => {
+                  navigate("/chat");
+                }}
+              >
+                <span className="bi bi-arrow-left"></span>
+              </button>
               <button
                 className="btn btn-outline-success"
                 onClick={() => {

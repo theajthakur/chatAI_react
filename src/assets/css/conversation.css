@@ -66,13 +66,21 @@
   align-items: center;
 }
 
-.conversation-container .main-body .conversation .footer input {
+.conversation-container .main-body .conversation .footer .chat-input {
   width: 100%;
-  outline: 0;
-  border: 0;
+  max-height: 96px;
+  line-height: 24px;
+  overflow-y: auto;
+  resize: none;
+  padding: 8px 12px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  box-sizing: border-box;
 }
 
-.conversation-container .main-body .conversation .footer input:focus {
+.conversation-container .main-body .conversation .footer .chat-input:focus {
   border: 0;
   outline: 0;
 }

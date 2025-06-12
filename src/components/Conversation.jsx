@@ -197,12 +197,13 @@ export default function Conversation({ isLogin, isLoading }) {
           </div>
           <div className="footer">
             <div className="message-input">
-              <input
+              <textarea
                 className="chat-input"
-                placeholder="Message.........."
+                rows="2"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
-              />
+                placeholder="Type a message..."
+              ></textarea>
               {inputMessage && (
                 <button className="chat-send" onClick={handleSendMessage}>
                   <span>

@@ -151,6 +151,7 @@
   border-radius: 10px;
   padding: 5px;
   background: #9fd9ff7d;
+  max-width: 70%;
 }
 
 .conversation-container

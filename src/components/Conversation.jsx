@@ -1,17 +1,39 @@
 import { useNavigate, useParams } from "react-router-dom";
 import "../assets/css/conversation.css";
 import { io } from "socket.io-client";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { authFetch } from "./utils/authFetch";
 import { notyf } from "./utils/notyf";
+
 export default function Conversation({ isLogin, isLoading }) {
   const navigate = useNavigate();
-  let firstRendered = false;
-  const roomId = useParams("roomid");
-  const roomid = roomId?.roomid;
+  const { roomid } = useParams();
   const [roomData, setRoomData] = useState(null);
+  const [inputMessage, setInputMessage] = useState("");
+  const [messages, setMessages] = useState([]);
+  const apiURL = import.meta.env.VITE_API_URL;
+  const socketRef = useRef(null);
+  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+
+  let user;
+  try {
+    const data = JSON.parse(localStorage.getItem("chat_room_user"));
+    if (!data?.name || !data?.email || !data.avatar) {
+      notyf.error("Please login ");
+      return navigate("/chat");
+    }
+    user = data;
+  } catch (error) {
+    user = {};
+  }
 
   useEffect(() => {
+    if (!isLogin && !isLoading) {
+      notyf.error("Please login first!");
+      navigate("/chat");
+      return;
+    }
+
     authFetch(`/api/chat/room/detail`, "POST", { roomId: roomid }).then(
       (response) => {
         if (response.status == "error") {
@@ -22,40 +44,17 @@ export default function Conversation({ isLogin, isLoading }) {
         }
       }
     );
-    if (!isLogin && !isLoading) {
-      notyf.error("Please login first!");
-      navigate("/chat");
-    }
-  }, [isLogin, navigate]);
+  }, [isLogin, isLoading, navigate, roomid]);
 
-  const [inputMessage, setInputMessage] = useState("");
-  const [messages, setMessages] = useState([]);
-  const apiURL = import.meta.env.VITE_API_URL;
-  const socket = io(apiURL);
-  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
-
-  let user;
-  try {
-    const data = JSON.parse(localStorage.getItem("chat_room_user"));
-    if (!data?.name || !data?.email || !data.avatar) {
-      if (firstRendered) {
-        notyf.error("Please login ");
-        return navigate("/chat");
-      }
-      firstRendered = true;
-    }
-    user = data;
-  } catch (error) {
-    user = {};
-  }
   useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Connected to socket server:", socket.id);
-      socket.emit("join_room", roomid);
-      socket.on("new_message", (data) => {
-        console.log(data);
-        console.log(user);
-        if (data.user?.email != user?.email) {
+    socketRef.current = io(apiURL);
+
+    socketRef.current.on("connect", () => {
+      console.log("Connected to socket server:", socketRef.current.id);
+      socketRef.current.emit("join_room", roomid);
+
+      socketRef.current.on("new_message", (data) => {
+        if (data.user?.email !== user?.email) {
           const msg = {
             type: "receive",
             time: data.time,
@@ -78,46 +77,48 @@ export default function Conversation({ isLogin, isLoading }) {
     const inputBlurred = () => {
       setTimeout(() => {
         setViewportHeight(window.innerHeight);
-      }, 300); // Delay to wait for keyboard close
+      }, 300);
     };
 
-    // Use visualViewport if available
     window.visualViewport?.addEventListener("resize", updateHeight);
-
-    // Fallback for keyboard detection
     document.addEventListener("focusin", inputFocused);
     document.addEventListener("focusout", inputBlurred);
-
-    // Initial height set
     updateHeight();
 
     return () => {
+      socketRef.current?.disconnect();
       window.visualViewport?.removeEventListener("resize", updateHeight);
       document.removeEventListener("focusin", inputFocused);
       document.removeEventListener("focusout", inputBlurred);
     };
-  }, []);
+  }, [apiURL, roomid]);
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
+    if (inputMessage.trim() === "") return;
+
     const response = await authFetch("/api/chat/send", "POST", {
-      roomId: roomId.roomid,
+      roomId: roomid,
       message: inputMessage,
     });
-    if (inputMessage.trim() === "") return;
+
     let date = new Date().toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
     });
+
     const msg = {
       type: "send",
       time: date,
       message: inputMessage,
       user_logo: user?.avatar,
     };
+
     setMessages((prev) => [...prev, msg]);
     setInputMessage("");
   };
+
   function copyText(data) {
     if (!navigator.clipboard) {
       const textarea = document.createElement("textarea");
@@ -181,7 +182,7 @@ export default function Conversation({ isLogin, isLoading }) {
                       <img
                         alt="User Avatar"
                         src={
-                          message.type == "send"
+                          message.type === "send"
                             ? user?.avatar || message.user_logo
                             : message.user_logo
                         }

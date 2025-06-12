@@ -147,7 +147,7 @@
 }
 
 .conversation-container .main-body .conversation .body .chat-unit .chat {
-  width: min-content;
+  width: max-content;
   border-radius: 10px;
   padding: 5px;
   background: #9fd9ff7d;

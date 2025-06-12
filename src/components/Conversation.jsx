@@ -118,6 +118,21 @@ export default function Conversation({ isLogin, isLoading }) {
     setMessages((prev) => [...prev, msg]);
     setInputMessage("");
   };
+  function copyText(data) {
+    if (!navigator.clipboard) {
+      const textarea = document.createElement("textarea");
+      textarea.value = data;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+    } else {
+      navigator.clipboard.writeText(data).catch((err) => {
+        console.error("Failed to copy: ", err);
+      });
+    }
+  }
+
   return (
     <div className="conversation-container" style={{ height: viewportHeight }}>
       <div className="sidebar d-none d-md-block"></div>
@@ -129,8 +144,32 @@ export default function Conversation({ isLogin, isLoading }) {
             </div>
             <div className="title">{roomData?.name}</div>
             <div className="navigation">
-              <span className="bi bi-x"></span>
-              <span className="bi bi-trash"></span>
+              <button
+                className="btn btn-outline-success"
+                onClick={() => {
+                  copyText(roomid);
+                  notyf.success("Code Copied!");
+                }}
+              >
+                <span className="bi bi-share"></span>
+              </button>
+              <button
+                className="btn btn-danger"
+                onClick={async () => {
+                  const response = await authFetch(
+                    "/api/chat/room/delete",
+                    "POST",
+                    { roomId: roomid }
+                  );
+                  if (response.status == "success") {
+                    notyf.success("Room deleted successfully!");
+                    return navigate("/chat");
+                  }
+                  return notyf[response.status](response.message);
+                }}
+              >
+                <span className="bi bi-trash"></span>
+              </button>
             </div>
           </div>
           <div className="body px-2 py-3">

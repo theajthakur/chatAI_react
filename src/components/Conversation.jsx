@@ -6,15 +6,28 @@ import { authFetch } from "./utils/authFetch";
 import { notyf } from "./utils/notyf";
 export default function Conversation({ isLogin, isLoading }) {
   const navigate = useNavigate();
+  let firstRendered = false;
+  const roomId = useParams("roomid");
+  const roomid = roomId?.roomid;
+  const [roomData, setRoomData] = useState(null);
+
   useEffect(() => {
+    authFetch(`/api/chat/room/detail`, "POST", { roomId: roomid }).then(
+      (response) => {
+        if (response.status == "error") {
+          notyf.error(response.message);
+          navigate("/chat");
+        } else {
+          setRoomData(response.data);
+        }
+      }
+    );
     if (!isLogin && !isLoading) {
       notyf.error("Please login first!");
       navigate("/chat");
     }
   }, [isLogin, navigate]);
-  let firstRendered = false;
-  const roomId = useParams("roomid");
-  const roomid = roomId?.roomid;
+
   const [inputMessage, setInputMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const apiURL = import.meta.env.VITE_API_URL;
@@ -114,7 +127,7 @@ export default function Conversation({ isLogin, isLoading }) {
             <div className="logo">
               <img src={user?.avatar} width={"100%"} />
             </div>
-            <div className="title">Hire Meeting</div>
+            <div className="title">{roomData?.name}</div>
             <div className="navigation">
               <span className="bi bi-x"></span>
               <span className="bi bi-trash"></span>

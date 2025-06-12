@@ -41,7 +41,7 @@ function App() {
           path="/chat"
           element={
             isLogin ? (
-              <JoinRoom setIsLogin={setIsLogin} />
+              <JoinRoom setIsLogin={setIsLogin} setIsLoading={setIsLoading} />
             ) : (
               <Auth setIsLogin={setIsLogin} setIsLoading={setIsLoading} />
             )

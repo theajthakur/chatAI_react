@@ -9,7 +9,7 @@ export default function Home() {
     <div className="home text-white bg-dark">
       <section className="hero d-flex flex-column justify-content-center align-items-center text-center py-5">
         <h1 className="display-4 fw-bold mb-3">
-          <i className="bi bi-chat-dots-fill me-2"></i>AI Chat Rooms
+          <i className="bi bi-chat-dots-fill me-2"></i>Chat Rooms
         </h1>
         <p className="lead mb-4">
           Create secure, smart chat rooms powered by AI & real-time WebSockets.

@@ -26,7 +26,6 @@ export async function authFetch(url, method = "GET", data = {}) {
       throw new Error(message);
     }
 
-    if (result.message) notyf.success(result.message);
     return result;
   } catch (err) {
     notyf.error(err.message || "Something went wrong");

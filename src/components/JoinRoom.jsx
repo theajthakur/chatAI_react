@@ -3,12 +3,14 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { Link, useNavigate } from "react-router-dom";
 import { notyf } from "./utils/notyf";
+import { authFetch } from "./utils/authFetch";
 
-export default function JoinRoom({ setIsLogin }) {
+export default function JoinRoom({ setIsLogin, setIsLoading }) {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [roomId, setRoomId] = useState("");
   const [joinMode, setJoinMode] = useState(false);
+  const [roomExist, setRoomExist] = useState(null);
 
   useEffect(() => {
     const data = localStorage.getItem("chat_room_user");
@@ -18,6 +20,23 @@ export default function JoinRoom({ setIsLogin }) {
       } catch {
         setUser(null);
       }
+    }
+  }, []);
+
+  useEffect(() => {
+    setIsLoading(true);
+    try {
+      authFetch("/api/chat/create/room", "GET").then((response) => {
+        if (response.code == "error") {
+          notyf.error(response.message);
+        } else {
+          if (response.code == "roomExist") setRoomExist(response.roomId);
+        }
+        setIsLoading(false);
+      });
+    } catch (error) {
+      setIsLoading(false);
+      notyf.error("Something went wrong");
     }
   }, []);
 
@@ -33,7 +52,14 @@ export default function JoinRoom({ setIsLogin }) {
   }
 
   const handleNewRoomGeneration = async () => {
-    notyf.error("Feature will be available soon!");
+    const response = await authFetch("/api/chat/create/room", "POST");
+    notyf[response.status](response.message);
+    const code = response.code;
+    if (code == "created") {
+      navigate(`/chat/${response.roomId}`);
+    } else if (code == "roomExist") {
+      alert("Room already exist!");
+    }
   };
   const handleRoomJoin = async () => {
     if (!roomId) return notyf.error("Please enter a valid ID!");
@@ -115,12 +141,44 @@ export default function JoinRoom({ setIsLogin }) {
                   </button>
                 </div>
                 <div className="col-sm-12 my-2">
-                  <button
-                    className="w-100 btn btn-success"
-                    onClick={handleNewRoomGeneration}
-                  >
-                    Create New Room
-                  </button>
+                  {roomExist ? (
+                    <div className="row">
+                      <div className="col-sm-6">
+                        <button
+                          className="w-100 btn btn-success"
+                          onClick={() => {
+                            navigate(`/chat/${roomExist}`);
+                          }}
+                        >
+                          Join
+                        </button>
+                      </div>
+                      <div className="col-sm-6">
+                        <button
+                          className="w-100 btn btn-danger"
+                          onClick={async () => {
+                            const response = await authFetch(
+                              "/api/chat/room/delete",
+                              "POST",
+                              { roomId: roomExist }
+                            );
+                            notyf[response.status](response.message);
+                            if (response.status == "success")
+                              setRoomExist(null);
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      className="w-100 btn btn-success"
+                      onClick={handleNewRoomGeneration}
+                    >
+                      Create New Room
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

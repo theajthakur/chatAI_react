@@ -6,7 +6,7 @@ import "animate.css";
 import { useEffect, useState } from "react";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Terminal from "./components/Terminal";
+import Conversation from "./components/Conversation";
 import Home from "./components/Home";
 import NotFound from "./components/NotFound";
 import Auth from "./components/Auth";
@@ -14,22 +14,22 @@ import JoinRoom from "./components/JoinRoom";
 import Loader from "./components/utils/Loader";
 
 function App() {
-  const [isLogin, setIsLogin] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLogin, setIsLogin] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     try {
       const token = localStorage.getItem("chat_room_token");
       const user = localStorage.getItem("chat_room_user");
       if (!token || !user || !JSON.parse(user).name) {
         setIsLogin(false);
+        setIsLoading(false);
         return;
       }
-      console.log(user);
-      console.log(token);
       setIsLogin(true);
     } catch (error) {
       setIsLogin(false);
     }
+    setIsLoading(false);
   }, []);
 
   return (
@@ -47,7 +47,10 @@ function App() {
             )
           }
         />
-        <Route path="/chat/:roomid" element={<Terminal isLogin={isLogin} />} />
+        <Route
+          path="/chat/:roomid"
+          element={<Conversation isLogin={isLogin} isLoading={isLoading} />}
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

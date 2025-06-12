@@ -1,0 +1,166 @@
+.conversation-container {
+  display: flex;
+  gap: 5px;
+  overflow-y: hidden;
+}
+
+.conversation-container .sidebar {
+  width: 400px;
+  box-shadow: 2px 0 5px 0 #00000080;
+}
+
+.conversation-container .main-body {
+  width: 100%;
+  display: flex;
+}
+
+.conversation-container .main-body .conversation .header {
+  display: flex;
+  padding: 1rem;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 -2px 5px 0 #00000080;
+}
+
+.conversation-container .main-body .conversation .body {
+  flex: 1;
+}
+
+.conversation-container .main-body .conversation {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.conversation-container .main-body .conversation .header .logo {
+  width: 50px;
+  background: #ffffff;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #fff;
+}
+
+.conversation-container .main-body .conversation .header .title {
+  flex: 1;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.conversation-container .main-body .conversation .header .navigation {
+  display: flex;
+  gap: 1rem;
+}
+
+.conversation-container .main-body .conversation .body {
+  flex: 1;
+}
+
+.conversation-container .main-body .conversation .footer {
+  padding: 1rem;
+  box-shadow: 2px 2px 5px 0 #00000080;
+}
+
+.conversation-container .main-body .conversation .footer .message-input {
+  display: flex;
+  align-items: center;
+}
+
+.conversation-container .main-body .conversation .footer input {
+  width: 100%;
+  outline: 0;
+  border: 0;
+}
+
+.conversation-container .main-body .conversation .footer input:focus {
+  border: 0;
+  outline: 0;
+}
+
+.conversation-container
+  .main-body
+  .conversation
+  .footer
+  .message-input
+  button.chat-send {
+  background: #00000010;
+  border: 0;
+  outline: 0;
+  border-radius: 5px;
+  padding: 10px 20px;
+  transition: 0.2s;
+}
+
+.conversation-container
+  .main-body
+  .conversation
+  .footer
+  .message-input
+  button.chat-send:hover {
+  background: #00000020;
+}
+\.conversation-container .main-body .conversation .body .chat-unit {
+  margin: 10px 0;
+  display: flex;
+}
+
+.conversation-container .main-body .conversation .body .chat-unit .chat {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.conversation-container
+  .main-body
+  .conversation
+  .body
+  .chat-unit
+  .chat.chat-send {
+  margin-left: auto;
+  background-color: #52666245;
+}
+
+.conversation-container
+  .main-body
+  .conversation
+  .body
+  .chat-unit
+  .chat
+  .user-logo
+  img {
+  width: 30px;
+  border-radius: 50%;
+}
+
+.conversation-container
+  .main-body
+  .conversation
+  .body
+  .chat-unit
+  .chat
+  .user-message {
+  min-width: 50px;
+}
+
+.conversation-container .main-body .conversation .body .chat-unit {
+  margin: 10px 0;
+}
+
+.conversation-container .main-body .conversation .body .chat-unit .chat {
+  width: min-content;
+  border-radius: 10px;
+  padding: 5px;
+  background: #9fd9ff7d;
+}
+
+.conversation-container
+  .main-body
+  .conversation
+  .body
+  .chat-unit
+  .chat
+  .user-time {
+  font-size: 0.7rem;
+  color: #00000095;
+  white-space: nowrap;
+}

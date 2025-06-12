@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { Link, useNavigate } from "react-router-dom";
+import { notyf } from "./utils/notyf";
 
 export default function JoinRoom({ setIsLogin }) {
   const navigate = useNavigate();
@@ -48,20 +49,20 @@ export default function JoinRoom({ setIsLogin }) {
         <div className="header p-2 bg-light">
           <div className="d-flex gap-2">
             <div>
-              <Link to={"/"} class="btn btn-primary">
-                <i class="bi bi-house"></i> Home
+              <Link to={"/"} className="btn btn-primary">
+                <i className="bi bi-house"></i> Home
               </Link>
             </div>
             <div className="ms-auto">
               <button
-                class="btn btn-danger"
+                className="btn btn-danger"
                 onClick={() => {
                   localStorage.removeItem("chat_room_token");
                   localStorage.removeItem("chat_room_user");
                   setIsLogin(false);
                 }}
               >
-                <i class="bi bi-box-arrow-right"></i> Logout
+                <i className="bi bi-box-arrow-right"></i> Logout
               </button>
             </div>
           </div>

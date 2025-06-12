@@ -3,7 +3,7 @@ export default function Loader() {
   return (
     <div className="loader-container">
       <div className="loader-inner">
-        <div class="lds-ripple">
+        <div className="lds-ripple">
           <div></div>
           <div></div>
         </div>

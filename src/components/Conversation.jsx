@@ -19,6 +19,7 @@ export default function Conversation({ isLogin, isLoading }) {
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
   const [aiChats, setAiChats] = useState([]);
   const [sidebarVisible, setSidebarVisible] = useState(false);
+  const [roomDetailVisibility, setRoomDetailVisibility] = useState(false);
 
   let user;
   try {
@@ -175,6 +176,7 @@ export default function Conversation({ isLogin, isLoading }) {
             onClick={() => {
               setSidebarVisible(false);
             }}
+            title="Go Back"
           >
             <span className="bi bi-arrow-left"></span> Return
           </button>
@@ -230,10 +232,22 @@ export default function Conversation({ isLogin, isLoading }) {
             >
               <span className="bi bi-list"></span>
             </button>
-            <div className="logo">
+            <div
+              className="logo"
+              onClick={() => {
+                setRoomDetailVisibility((prev) => !prev);
+              }}
+            >
               <img src={roomIcon} width={"100%"} />
             </div>
-            <div className="title">{roomData?.name}</div>
+            <div
+              className="title"
+              onClick={() => {
+                setRoomDetailVisibility((prev) => !prev);
+              }}
+            >
+              {roomData?.name}
+            </div>
             <div className="navigation">
               <button
                 className="btn btn-outline-primary"
@@ -242,32 +256,6 @@ export default function Conversation({ isLogin, isLoading }) {
                 }}
               >
                 <span className="bi bi-arrow-left"></span>
-              </button>
-              <button
-                className="btn btn-outline-success"
-                onClick={() => {
-                  copyText(roomid);
-                  notyf.success("Code Copied!");
-                }}
-              >
-                <span className="bi bi-share"></span>
-              </button>
-              <button
-                className="btn btn-danger"
-                onClick={async () => {
-                  const response = await authFetch(
-                    "/api/chat/room/delete",
-                    "POST",
-                    { roomId: roomid }
-                  );
-                  if (response.status == "success") {
-                    notyf.success("Room deleted successfully!");
-                    return navigate("/chat");
-                  }
-                  return notyf[response.status](response.message);
-                }}
-              >
-                <span className="bi bi-trash"></span>
               </button>
             </div>
           </div>
@@ -292,7 +280,11 @@ export default function Conversation({ isLogin, isLoading }) {
                 </div>
               ))}
             </div>
-            <div className="room-details">
+            <div
+              className={`room-details ${
+                roomDetailVisibility ? "" : "d-none d-md-block"
+              }`}
+            >
               <div className="inner">
                 <div className="text-center">
                   <img
@@ -300,7 +292,10 @@ export default function Conversation({ isLogin, isLoading }) {
                     alt="Room Logo"
                     style={{ borderRadius: "50%" }}
                   />
-                  <h3 className="my-4">{roomData?.name}</h3>
+                  <h3 className="mt-4">{roomData?.name}</h3>
+                  <p className="lead" style={{ fontSize: "0.8rem" }}>
+                    <span>{roomData?.email}</span>
+                  </p>
                   <div className="qr-container">
                     <QRCodeCanvas
                       value={window.location.href}
@@ -310,6 +305,34 @@ export default function Conversation({ isLogin, isLoading }) {
                     />
                     <p>Scan and Join</p>
                   </div>
+                  <button
+                    className="btn btn-outline-success w-100 my-2"
+                    onClick={() => {
+                      copyText(roomid);
+                      notyf.success("Code Copied!");
+                    }}
+                  >
+                    <span className="bi bi-share"></span>{" "}
+                    <span className="ms-3">Copy Room Code</span>
+                  </button>
+                  <button
+                    className="w-100 btn btn-danger my-2"
+                    onClick={async () => {
+                      const response = await authFetch(
+                        "/api/chat/room/delete",
+                        "POST",
+                        { roomId: roomid }
+                      );
+                      if (response.status == "success") {
+                        notyf.success("Room deleted successfully!");
+                        return navigate("/chat");
+                      }
+                      return notyf[response.status](response.message);
+                    }}
+                  >
+                    <span className="bi bi-trash"></span>
+                    <span className="ms-3">Delete Room</span>
+                  </button>
                 </div>
               </div>
             </div>

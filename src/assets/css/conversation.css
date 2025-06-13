@@ -30,14 +30,22 @@
 
 .conversation-container .main-body .conversation .room-details {
   width: 400px;
-  border: 2px solid #00000030;
-  padding: 20px 10px;
+  border: 2px solid #00000020;
+  overflow: hidden;
   max-height: 100%;
   overflow-y: scroll;
   border-radius: 10px;
+  background: white;
+  box-shadow: 0 0 10px 0 #00000020;
 }
+
+.conversation-container .main-body .conversation .room-details .inner {
+  padding: 20px 10px;
+}
+
 .conversation-container .main-body .conversation .chat-interface {
   width: 100%;
+  padding: 20px;
 }
 
 .conversation-container .main-body .conversation {
@@ -184,7 +192,7 @@
   white-space: nowrap;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 767px) {
   .conversation-container .sidebar {
     position: absolute;
     top: 0;
@@ -197,5 +205,16 @@
 
   .conversation-container .main-body .conversation .header .navigation {
     gap: 0.5rem;
+  }
+
+  .conversation-container .main-body .conversation .room-details {
+    position: absolute;
+    right: 20px;
+  }
+}
+
+@media screen and (max-width: 440px) {
+  .conversation-container .main-body .conversation .room-details {
+    width: calc(100% - 40px);
   }
 }

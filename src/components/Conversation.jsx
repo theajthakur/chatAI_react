@@ -191,7 +191,7 @@ export default function Conversation({ isLogin, isLoading }) {
               <button
                 className="btn btn-success w-100"
                 onClick={async () => {
-                  if (aiChats.length < 10)
+                  if (aiChats.length < 2)
                     return notyf.success("More chats required to summarize!");
                   setIsGeneratingSummary(true);
                   try {

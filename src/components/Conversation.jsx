@@ -20,6 +20,7 @@ export default function Conversation({ isLogin, isLoading }) {
   const [aiChats, setAiChats] = useState([]);
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [roomDetailVisibility, setRoomDetailVisibility] = useState(false);
+  const textareaRef = useRef(null);
 
   let user;
   try {
@@ -48,6 +49,7 @@ export default function Conversation({ isLogin, isLoading }) {
           navigate("/chat");
         } else {
           setRoomData(response.data);
+          textareaRef.current?.focus();
         }
       }
     );
@@ -130,6 +132,7 @@ export default function Conversation({ isLogin, isLoading }) {
     setMessages((prev) => [...prev, msg]);
     setAiChats((prev) => [...prev, { name: user.name, message: inputMessage }]);
     setInputMessage("");
+    textareaRef.current.focus();
   };
 
   function copyText(data) {
@@ -340,6 +343,7 @@ export default function Conversation({ isLogin, isLoading }) {
           <div className="footer">
             <div className="message-input">
               <textarea
+                ref={textareaRef}
                 className="chat-input"
                 rows="2"
                 value={inputMessage}

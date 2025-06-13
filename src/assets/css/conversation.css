@@ -24,6 +24,20 @@
 
 .conversation-container .main-body .conversation .body {
   flex: 1;
+  overflow-y: scroll;
+  display: flex;
+}
+
+.conversation-container .main-body .conversation .room-details {
+  width: 400px;
+  border: 2px solid #00000030;
+  padding: 20px 10px;
+  max-height: 100%;
+  overflow-y: scroll;
+  border-radius: 10px;
+}
+.conversation-container .main-body .conversation .chat-interface {
+  width: 100%;
 }
 
 .conversation-container .main-body .conversation {
@@ -50,10 +64,6 @@
 .conversation-container .main-body .conversation .header .navigation {
   display: flex;
   gap: 1rem;
-}
-
-.conversation-container .main-body .conversation .body {
-  flex: 1;
 }
 
 .conversation-container .main-body .conversation .footer {
@@ -183,5 +193,9 @@
     z-index: 9;
     background-color: #fff;
     width: 100%;
+  }
+
+  .conversation-container .main-body .conversation .header .navigation {
+    gap: 0.5rem;
   }
 }

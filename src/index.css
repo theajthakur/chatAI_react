@@ -13,3 +13,7 @@ html {
 body {
   font-family: "Manrope", sans-serif !important;
 }
+
+::-webkit-scrollbar {
+  display: none;
+}

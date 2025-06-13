@@ -4,6 +4,7 @@ import { io } from "socket.io-client";
 import { useEffect, useState, useRef } from "react";
 import { authFetch } from "./utils/authFetch";
 import { notyf } from "./utils/notyf";
+import { QRCodeCanvas } from "qrcode.react";
 
 export default function Conversation({ isLogin, isLoading }) {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ export default function Conversation({ isLogin, isLoading }) {
   } catch (error) {
     user = {};
   }
+  const roomIcon = user?.avatar;
 
   useEffect(() => {
     if (!isLogin && !isLoading) {
@@ -229,7 +231,7 @@ export default function Conversation({ isLogin, isLoading }) {
               <span className="bi bi-list"></span>
             </button>
             <div className="logo">
-              <img src={user?.avatar} width={"100%"} />
+              <img src={roomIcon} width={"100%"} />
             </div>
             <div className="title">{roomData?.name}</div>
             <div className="navigation">
@@ -289,6 +291,27 @@ export default function Conversation({ isLogin, isLoading }) {
                   </div>
                 </div>
               ))}
+            </div>
+            <div className="room-details">
+              <div className="inner">
+                <div className="text-center">
+                  <img
+                    src={roomIcon}
+                    alt="Room Logo"
+                    style={{ borderRadius: "50%" }}
+                  />
+                  <h3 className="my-4">{roomData?.name}</h3>
+                  <div className="qr-container">
+                    <QRCodeCanvas
+                      value={window.location.href}
+                      size={200}
+                      bgColor="#ffffff"
+                      fgColor="#000000"
+                    />
+                    <p>Scan and Join</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div className="footer">

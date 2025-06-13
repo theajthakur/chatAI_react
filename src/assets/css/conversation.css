@@ -77,6 +77,12 @@
 .conversation-container .main-body .conversation .footer {
   padding: 1rem;
   box-shadow: 2px 2px 5px 0 #00000080;
+  position: relative;
+}
+
+.conversation-container .main-body .conversation .footer .emoji-container {
+  position: absolute;
+  bottom: 100px;
 }
 
 .conversation-container .main-body .conversation .footer .message-input {

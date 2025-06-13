@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from "react";
 import { authFetch } from "./utils/authFetch";
 import { notyf } from "./utils/notyf";
 import { QRCodeCanvas } from "qrcode.react";
+import EmojiPicker from "emoji-picker-react";
 
 export default function Conversation({ isLogin, isLoading }) {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ export default function Conversation({ isLogin, isLoading }) {
   const [aiChats, setAiChats] = useState([]);
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [roomDetailVisibility, setRoomDetailVisibility] = useState(false);
+  const [showEmoji, setShowEmoji] = useState(false);
   const textareaRef = useRef(null);
 
   let user;
@@ -341,7 +343,37 @@ export default function Conversation({ isLogin, isLoading }) {
             </div>
           </div>
           <div className="footer">
+            {showEmoji && (
+              <div className="emoji-container">
+                <button
+                  className="btn"
+                  onClick={() => {
+                    setShowEmoji(false);
+                  }}
+                >
+                  <span className="bi bi-x"></span>
+                  <span className="ms-2">Hide</span>
+                </button>
+                <EmojiPicker
+                  onEmojiClick={(emojiData) => {
+                    setInputMessage((prev) => prev + emojiData.emoji);
+                  }}
+                />
+              </div>
+            )}
+
             <div className="message-input">
+              {!showEmoji && (
+                <button
+                  className="btn"
+                  style={{ marginBottom: "auto" }}
+                  onClick={() => {
+                    setShowEmoji(true);
+                  }}
+                >
+                  <span className="bi bi-emoji-smile"></span>
+                </button>
+              )}
               <textarea
                 ref={textareaRef}
                 className="chat-input"

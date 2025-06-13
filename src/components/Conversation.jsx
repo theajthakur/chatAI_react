@@ -110,6 +110,7 @@ export default function Conversation({ isLogin, isLoading }) {
   }, [apiURL, roomid]);
 
   const handleSendMessage = async (e) => {
+    textareaRef.current.focus();
     if (e) e.preventDefault();
     if (inputMessage.trim() === "") return;
 
@@ -134,7 +135,6 @@ export default function Conversation({ isLogin, isLoading }) {
     setMessages((prev) => [...prev, msg]);
     setAiChats((prev) => [...prev, { name: user.name, message: inputMessage }]);
     setInputMessage("");
-    textareaRef.current.focus();
   };
 
   function copyText(data) {
@@ -344,7 +344,7 @@ export default function Conversation({ isLogin, isLoading }) {
           </div>
           <div className="footer">
             {showEmoji && (
-              <div className="emoji-container">
+              <div className="emoji-container card px-3 bg-white">
                 <button
                   className="btn"
                   onClick={() => {

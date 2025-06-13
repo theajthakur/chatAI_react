@@ -108,7 +108,7 @@ export default function Conversation({ isLogin, isLoading }) {
   }, [apiURL, roomid]);
 
   const handleSendMessage = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (inputMessage.trim() === "") return;
 
     const response = await authFetch("/api/chat/send", "POST", {
@@ -349,6 +349,12 @@ export default function Conversation({ isLogin, isLoading }) {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 placeholder="Type a message..."
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage();
+                  }
+                }}
               ></textarea>
               {inputMessage && (
                 <button className="chat-send" onClick={handleSendMessage}>

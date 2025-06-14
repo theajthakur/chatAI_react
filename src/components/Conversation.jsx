@@ -462,28 +462,32 @@ export default function Conversation() {
                     <span className="ms-3">Delete Room</span>
                   </button>
                 </div>
-                <div className="py-3 my-3 border-top">
-                  <h4 className="text-center">Active Participant</h4>
-                  <div className="users-list">
-                    {onlineUsers?.map((o, key) => (
-                      <div
-                        key={key}
-                        className="user-unit p-2 shadow-sm d-flex gap-2 my-2 align-items-center"
-                      >
-                        <img
-                          src={o.avatar}
-                          className="rounded-circle"
-                          alt="user"
-                          width={50}
-                        />
-                        <div>
-                          <p className="m-0">{o.name}</p>
-                          <p className="m-0 small text-secondary">{o.email}</p>
+                {onlineUsers?.length > 0 && (
+                  <div className="py-3 my-3 border-top">
+                    <h4 className="text-center">Active Participant</h4>
+                    <div className="users-list">
+                      {onlineUsers?.map((o, key) => (
+                        <div
+                          key={key}
+                          className="user-unit p-2 shadow-sm d-flex gap-2 my-2 align-items-center"
+                        >
+                          <img
+                            src={o.avatar}
+                            className="rounded-circle"
+                            alt="user"
+                            width={50}
+                          />
+                          <div>
+                            <p className="m-0">{o.name}</p>
+                            <p className="m-0 small text-secondary">
+                              {o.email}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>

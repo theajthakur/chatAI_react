@@ -25,6 +25,7 @@ export default function Conversation() {
   const [roomDetailVisibility, setRoomDetailVisibility] = useState(false);
   const [showEmoji, setShowEmoji] = useState(false);
   const textareaRef = useRef(null);
+  const [onlineUsers, setOnlineUsers] = useState([]);
 
   let userRef = useRef({});
 
@@ -100,11 +101,19 @@ export default function Conversation() {
 
     const handleNewJoin = (data) => {
       if (data.email === userRef.current.email) return;
+      setOnlineUsers((prev = []) => {
+        if (prev.some((user) => user.email === data.email)) return prev;
+        return [...prev, data];
+      });
+
       setMessages((prev) => [...prev, { type: "user_join", user: data }]);
     };
 
     const handleSocketExit = (data) => {
       if (data.email === userRef.current.email) return;
+      setOnlineUsers((prev) => {
+        prev.filter((p) => p.email != data.email);
+      });
       setMessages((prev) => [
         ...prev,
         { type: "user_disconnected", user: data },
@@ -377,23 +386,30 @@ export default function Conversation() {
               }`}
             >
               <div className="inner">
-                <div className="text-center">
-                  <img
-                    src={roomData?.user?.avatar}
-                    alt="Room Logo"
-                    style={{ borderRadius: "50%" }}
-                  />
-                  <h3 className="mt-4">{roomData?.name}</h3>
-                  <p className="m-0">
-                    <b>{roomData?.user?.name}</b>
-                  </p>
-                  <p className="lead" style={{ fontSize: "0.8rem" }}>
-                    <span>{roomData?.email}</span>
-                  </p>
+                <div className="text-center position-relative">
+                  <div className=" position-sticky top-0 py-2 bg-white">
+                    <img
+                      src={roomData?.user?.avatar}
+                      alt="Room Logo"
+                      style={{ borderRadius: "50%" }}
+                    />
+                    <h3 className="mt-4">{roomData?.name}</h3>
+                    <p className="m-0">
+                      <b>{roomData?.user?.name}</b>
+                    </p>
+                    <p className="lead" style={{ fontSize: "0.8rem" }}>
+                      <span>{roomData?.email}</span>
+                    </p>
+                  </div>
                   <div className="qr-container">
                     <QRCodeCanvas
                       value={window.location.href}
                       size={200}
+                      style={{
+                        maxWidth: "200px",
+                        width: "-webkit-fill-available",
+                        height: "auto",
+                      }}
                       bgColor="#ffffff"
                       fgColor="#000000"
                     />
@@ -427,6 +443,28 @@ export default function Conversation() {
                     <span className="bi bi-trash"></span>
                     <span className="ms-3">Delete Room</span>
                   </button>
+                </div>
+                <div className="py-3 my-3 border-top">
+                  <h4 className="text-center">Active Participant</h4>
+                  <div className="users-list">
+                    {onlineUsers?.map((o, key) => (
+                      <div
+                        key={key}
+                        className="user-unit p-2 shadow-sm d-flex gap-2 my-2 align-items-center"
+                      >
+                        <img
+                          src={o.avatar}
+                          className="rounded-circle"
+                          alt="user"
+                          width={50}
+                        />
+                        <div>
+                          <p className="m-0">{o.name}</p>
+                          <p className="m-0 small text-secondary">{o.email}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>

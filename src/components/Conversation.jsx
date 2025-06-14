@@ -7,6 +7,7 @@ import { notyf } from "./utils/notyf";
 import { QRCodeCanvas } from "qrcode.react";
 import EmojiPicker from "emoji-picker-react";
 import { useAuth } from "../context/AuthContext";
+import LoaderSquare from "./utils/LoaderSquare";
 
 export default function Conversation() {
   const { isLogin, isLoading, redirect, setRedirect } = useAuth();
@@ -234,44 +235,49 @@ export default function Conversation() {
           >
             <span className="bi bi-arrow-left"></span> Return
           </button>
-          {isGeneratingSummary ? (
-            <p className="text-center">✨✨✨✨✨</p>
-          ) : (
-            <div className="summarize-action">
-              <p className="text-center lead">AI Summarizer ✨</p>
-              <button
-                className="btn btn-success w-100"
-                onClick={async () => {
-                  if (aiChats.length < 2)
-                    return notyf.success("More chats required to summarize!");
-                  setIsGeneratingSummary(true);
-                  try {
-                    const response = await authFetch(
-                      "/api/chat/room/summarize",
-                      "POST",
-                      { data: aiChats }
-                    );
-                    setSummary(extractJSON(response.response));
-                    setAiChats([]);
-                  } catch (error) {
-                    console.log(error);
-                  }
-                  setIsGeneratingSummary(false);
-                }}
-              >
-                Summarize
-              </button>
-            </div>
-          )}
+          <div className="summarize-action">
+            <p className="text-center lead">AI Summarizer ✨</p>
+            <button
+              className={`btn btn-success w-100  ${
+                isGeneratingSummary ? "disabled" : ""
+              }`}
+              onClick={async () => {
+                if (isGeneratingSummary) return;
+                if (aiChats.length < 2)
+                  return notyf.success("More chats required to summarize!");
+                setIsGeneratingSummary(true);
+                try {
+                  const response = await authFetch(
+                    "/api/chat/room/summarize",
+                    "POST",
+                    { data: aiChats }
+                  );
+                  setSummary(extractJSON(response.response));
+                  setAiChats([]);
+                } catch (error) {
+                  console.log(error);
+                }
+                setIsGeneratingSummary(false);
+              }}
+            >
+              {isGeneratingSummary ? "Summarizing" : "Summarize"}
+            </button>
+          </div>
         </div>
         <div className="summary-container p-3">
-          {summary && !isGeneratingSummary && (
-            <div className="details">
-              <blockquote>
-                <b>Mood: </b> {summary.chatMood}
-              </blockquote>
-              <p className="lead">{summary.summary}</p>
-            </div>
+          {isGeneratingSummary ? (
+            <LoaderSquare />
+          ) : (
+            <>
+              {summary && (
+                <div className="details">
+                  <blockquote>
+                    <b>Mood: </b> {summary.chatMood}
+                  </blockquote>
+                  <p className="lead">{summary.summary}</p>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

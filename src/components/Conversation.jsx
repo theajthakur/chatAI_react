@@ -312,8 +312,20 @@ export default function Conversation() {
               <button
                 className="btn btn-outline-primary"
                 onClick={() => {
+                  const confirmExit = window.confirm(
+                    "Are you sure you want to exit the Room?"
+                  );
+                  if (!confirmExit) return;
+
+                  // Clean up socket connection
+                  if (socketRef.current?.connected) {
+                    socketRef.current.disconnect();
+                  }
+
+                  // Optional: clear any local state
                   setRedirect("");
-                  socketRef.current.disconnect();
+
+                  // Navigate out of the room
                   navigate("/chat");
                 }}
               >

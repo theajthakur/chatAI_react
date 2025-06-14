@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import GoogleLogin from "./utils/GoogleLogin";
-function Auth({ setIsLogin, setIsLoading }) {
+import { useAuth } from "../context/AuthContext";
+function Auth() {
+  const { isLogin, isLoading, setIsLogin, setIsLoading } = useAuth();
   return (
     <div className="container-fluid vh-100 d-flex justify-content-center align-items-center bg-light">
       <div

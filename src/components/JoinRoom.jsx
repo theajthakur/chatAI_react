@@ -1,16 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { Link, useNavigate } from "react-router-dom";
 import { notyf } from "./utils/notyf";
 import { authFetch } from "./utils/authFetch";
+import { useAuth } from "../context/AuthContext";
 
-export default function JoinRoom({ setIsLogin, setIsLoading }) {
+export default function JoinRoom() {
+  const { setIsLogin, setIsLoading } = useAuth();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [roomId, setRoomId] = useState("");
   const [joinMode, setJoinMode] = useState(false);
   const [roomExist, setRoomExist] = useState(null);
+  const hasCheckedRoom = useRef(false);
 
   useEffect(() => {
     const data = localStorage.getItem("chat_room_user");
@@ -24,20 +27,25 @@ export default function JoinRoom({ setIsLogin, setIsLoading }) {
   }, []);
 
   useEffect(() => {
+    if (hasCheckedRoom.current) return;
+    hasCheckedRoom.current = true;
+
     setIsLoading(true);
-    try {
-      authFetch("/api/chat/create/room", "GET").then((response) => {
-        if (response.code == "error") {
+    authFetch("/api/chat/create/room", "GET")
+      .then((response) => {
+        if (response.code === "error") {
           notyf.error(response.message);
-        } else {
-          if (response.code == "roomExist") setRoomExist(response.roomId);
+        } else if (response.code === "roomExist") {
+          setRoomExist(response.roomId);
         }
+      })
+      .catch(() => {
+        notyf.error("Something went wrong");
+      })
+      .finally(() => {
         setIsLoading(false);
       });
-    } catch (error) {
-      setIsLoading(false);
-      notyf.error("Something went wrong");
-    }
+    setIsLoading(false);
   }, []);
 
   if (!user) {

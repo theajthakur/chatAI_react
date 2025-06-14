@@ -6,8 +6,10 @@ import { authFetch } from "./utils/authFetch";
 import { notyf } from "./utils/notyf";
 import { QRCodeCanvas } from "qrcode.react";
 import EmojiPicker from "emoji-picker-react";
+import { useAuth } from "../context/AuthContext";
 
-export default function Conversation({ isLogin, isLoading }) {
+export default function Conversation() {
+  const { isLogin, isLoading } = useAuth();
   const navigate = useNavigate();
   const { roomid } = useParams();
   const [roomData, setRoomData] = useState(null);

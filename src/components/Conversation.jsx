@@ -31,6 +31,31 @@ export default function Conversation() {
   let userRef = useRef({});
 
   useEffect(() => {
+    authFetch("/api/chat/fetch/all", "POST", { roomId: roomid }).then(
+      (data) => {
+        setMessages(
+          data.chats.map((aa) => {
+            const type =
+              aa.user.email === userRef.current.email ? "send" : "receive";
+            const time = new Date(aa.createdAt).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            });
+            return {
+              type,
+              name: aa.user.name,
+              message: aa.message,
+              time,
+              user_logo: aa.user.avatar,
+            };
+          })
+        );
+      }
+    );
+  }, []);
+
+  useEffect(() => {
     try {
       const data = JSON.parse(localStorage.getItem("chat_room_user"));
       if (!data?.name || !data?.email || !data.avatar) {
@@ -112,9 +137,11 @@ export default function Conversation() {
 
     const handleSocketExit = (data) => {
       if (data.email === userRef.current.email) return;
-      setOnlineUsers((prev) => {
-        prev.filter((p) => p.email != data.email);
+
+      setOnlineUsers((prev = []) => {
+        return prev.filter((p) => p.email !== data.email);
       });
+
       setMessages((prev) => [
         ...prev,
         { type: "user_disconnected", user: data },
@@ -156,21 +183,25 @@ export default function Conversation() {
       document.removeEventListener("focusout", inputBlurred);
     };
   });
-  const handleSendMessage = async (e) => {
+  const handleSendMessage = (e) => {
     textareaRef.current.focus();
     if (e) e.preventDefault();
     if (inputMessage.trim() === "") return;
 
-    const response = await authFetch("/api/chat/send", "POST", {
-      roomId: roomid,
-      message: inputMessage,
-    });
-
-    let date = new Date().toLocaleTimeString([], {
+    const date = new Date().toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
     });
+
+    const messageData = {
+      roomId: roomid,
+      message: inputMessage,
+      user: userRef.current,
+      time: date,
+    };
+
+    socketRef.current.emit("send_message", messageData);
 
     const msg = {
       type: "send",
@@ -184,6 +215,7 @@ export default function Conversation() {
       ...prev,
       { name: userRef.current.name, message: inputMessage },
     ]);
+
     setInputMessage("");
   };
 

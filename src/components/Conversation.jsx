@@ -9,7 +9,7 @@ import EmojiPicker from "emoji-picker-react";
 import { useAuth } from "../context/AuthContext";
 
 export default function Conversation() {
-  const { isLogin, isLoading } = useAuth();
+  const { isLogin, isLoading, redirect, setRedirect } = useAuth();
   const navigate = useNavigate();
   const { roomid } = useParams();
   const [roomData, setRoomData] = useState(null);
@@ -26,22 +26,24 @@ export default function Conversation() {
   const [showEmoji, setShowEmoji] = useState(false);
   const textareaRef = useRef(null);
 
-  let user;
-  try {
-    const data = JSON.parse(localStorage.getItem("chat_room_user"));
-    if (!data?.name || !data?.email || !data.avatar) {
-      notyf.error("Please login ");
-      return navigate("/chat");
-    }
-    user = data;
-  } catch (error) {
-    user = {};
-  }
-  const roomIcon = user?.avatar;
+  let userRef = useRef({});
 
   useEffect(() => {
+    try {
+      const data = JSON.parse(localStorage.getItem("chat_room_user"));
+      if (!data?.name || !data?.email || !data.avatar) {
+        notyf.error("Please login ");
+        setRedirect(roomid);
+        return navigate("/chat");
+      }
+      userRef.current = data;
+    } catch (error) {
+      console.log(error);
+    }
+
     if (!isLogin && !isLoading) {
       notyf.error("Please login first!");
+      setRedirect(roomid);
       navigate("/chat");
       return;
     }
@@ -50,6 +52,8 @@ export default function Conversation() {
       (response) => {
         if (response.status == "error") {
           notyf.error(response.message);
+          setRedirect(roomid);
+          setRedirect("");
           navigate("/chat");
         } else {
           setRoomData(response.data);
@@ -64,26 +68,59 @@ export default function Conversation() {
 
     socketRef.current.on("connect", () => {
       console.log("Connected to socket server:", socketRef.current.id);
-      socketRef.current.emit("join_room", roomid);
-
-      socketRef.current.on("new_message", (data) => {
-        if (data.user?.email !== user?.email) {
-          const msg = {
-            type: "receive",
-            name: data.user.name,
-            time: data.time,
-            message: data.message,
-            user_logo: data.user.avatar,
-          };
-          setMessages((prev) => [...prev, msg]);
-          setAiChats((prev) => [
-            ...prev,
-            { name: data.user.name, message: data.message },
-          ]);
-        }
+      socketRef.current.emit("join_room", {
+        roomId: roomid,
+        user: userRef.current,
+      });
+      socketRef.current.emit("register_user", {
+        user: userRef.current,
       });
     });
 
+    socketRef.current.on("disconnect", () => {
+      console.log("Disconnected to socket server:", socketRef.current.id);
+    });
+
+    const handleNewMessage = (data) => {
+      if (data.user?.email !== userRef.current.email) {
+        const msg = {
+          type: "receive",
+          name: data.user.name,
+          time: data.time,
+          message: data.message,
+          user_logo: data.user.avatar,
+        };
+        setMessages((prev) => [...prev, msg]);
+        setAiChats((prev) => [
+          ...prev,
+          { name: data.user.name, message: data.message },
+        ]);
+      }
+    };
+
+    const handleNewJoin = (data) => {
+      if (data.email === userRef.current.email) return;
+      setMessages((prev) => [...prev, { type: "user_join", user: data }]);
+    };
+
+    const handleSocketExit = (data) => {
+      if (data.email === userRef.current.email) return;
+      setMessages((prev) => [
+        ...prev,
+        { type: "user_disconnected", user: data },
+      ]);
+    };
+
+    socketRef.current.on("new_message", handleNewMessage);
+    socketRef.current.on("user_connected", handleNewJoin);
+    socketRef.current.on("user_disconnected", handleSocketExit);
+    return () => {
+      socketRef.current.off("new_message", handleNewMessage);
+      socketRef.current.disconnect();
+    };
+  }, [apiURL, roomid]);
+
+  useEffect(() => {
     const updateHeight = () => {
       setViewportHeight(window.visualViewport?.height || window.innerHeight);
     };
@@ -104,13 +141,11 @@ export default function Conversation() {
     updateHeight();
 
     return () => {
-      socketRef.current?.disconnect();
       window.visualViewport?.removeEventListener("resize", updateHeight);
       document.removeEventListener("focusin", inputFocused);
       document.removeEventListener("focusout", inputBlurred);
     };
-  }, [apiURL, roomid]);
-
+  });
   const handleSendMessage = async (e) => {
     textareaRef.current.focus();
     if (e) e.preventDefault();
@@ -131,11 +166,14 @@ export default function Conversation() {
       type: "send",
       time: date,
       message: inputMessage,
-      user_logo: user?.avatar,
+      user_logo: userRef.current.avatar,
     };
 
     setMessages((prev) => [...prev, msg]);
-    setAiChats((prev) => [...prev, { name: user.name, message: inputMessage }]);
+    setAiChats((prev) => [
+      ...prev,
+      { name: userRef.current.name, message: inputMessage },
+    ]);
     setInputMessage("");
   };
 
@@ -245,7 +283,7 @@ export default function Conversation() {
                 setRoomDetailVisibility((prev) => !prev);
               }}
             >
-              <img src={roomIcon} width={"100%"} />
+              <img src={userRef.current.avatar} width={"100%"} />
             </div>
             <div
               className="title"
@@ -259,6 +297,8 @@ export default function Conversation() {
               <button
                 className="btn btn-outline-primary"
                 onClick={() => {
+                  setRedirect("");
+                  socketRef.current.disconnect();
                   navigate("/chat");
                 }}
               >
@@ -268,24 +308,68 @@ export default function Conversation() {
           </div>
           <div className="body px-2 py-3">
             <div className="chat-interface">
-              {messages.map((message, key) => (
-                <div className="chat-unit" key={key}>
-                  <div className={`chat chat-${message.type}`}>
-                    <div className="user-logo">
-                      <img
-                        alt="User Avatar"
-                        src={
-                          message.type === "send"
-                            ? user?.avatar || message.user_logo
-                            : message.user_logo
-                        }
-                      />
+              {messages.map((message, key) => {
+                if (message.type == "user_join") {
+                  return (
+                    <div className="chat-unit" key={key}>
+                      <div className="announcement">
+                        <div className="d-flex gap-2 align-items-center justify-content-center">
+                          <div>
+                            <img
+                              src={message.user.avatar}
+                              alt="user icon"
+                              width={20}
+                              style={{ borderRadius: "50%" }}
+                            />
+                          </div>
+                          <p className="m-0 small text-secondary">
+                            {message.user.name} Joined the Chat!
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                    <div className="user-message">{message.message}</div>
-                    <div className="user-time">{message.time}</div>
-                  </div>
-                </div>
-              ))}
+                  );
+                } else if (message.type == "user_disconnected") {
+                  return (
+                    <div className="chat-unit" key={key}>
+                      <div className="announcement">
+                        <div className="d-flex gap-2 align-items-center justify-content-center">
+                          <div>
+                            <img
+                              src={message.user.avatar}
+                              alt="user icon"
+                              width={20}
+                              style={{ borderRadius: "50%" }}
+                            />
+                          </div>
+                          <p className="m-0 small text-danger">
+                            {message.user.name} left the Chat!
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                } else {
+                  return (
+                    <div className="chat-unit" key={key}>
+                      <div className={`chat chat-${message.type}`}>
+                        <div className="user-logo">
+                          <img
+                            alt="User Avatar"
+                            src={
+                              message.type === "send"
+                                ? userRef.current.avatar || message.user_logo
+                                : message.user_logo
+                            }
+                          />
+                        </div>
+                        <div className="user-message">{message.message}</div>
+                        <div className="user-time">{message.time}</div>
+                      </div>
+                    </div>
+                  );
+                }
+              })}
             </div>
             <div
               className={`room-details ${
@@ -295,7 +379,7 @@ export default function Conversation() {
               <div className="inner">
                 <div className="text-center">
                   <img
-                    src={roomIcon}
+                    src={userRef.current.avatar}
                     alt="Room Logo"
                     style={{ borderRadius: "50%" }}
                   />

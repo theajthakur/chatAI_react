@@ -7,7 +7,7 @@ import { authFetch } from "./utils/authFetch";
 import { useAuth } from "../context/AuthContext";
 
 export default function JoinRoom() {
-  const { setIsLogin, setIsLoading } = useAuth();
+  const { setIsLogin, setIsLoading, redirect, setRedirect } = useAuth();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [roomId, setRoomId] = useState("");
@@ -20,6 +20,9 @@ export default function JoinRoom() {
     if (data) {
       try {
         setUser(JSON.parse(data));
+        if (redirect) {
+          navigate(`/chat/${redirect}`);
+        }
       } catch {
         setUser(null);
       }

@@ -26,6 +26,7 @@
   flex: 1;
   overflow-y: scroll;
   display: flex;
+  position: relative;
 }
 
 .conversation-container .main-body .conversation .room-details {
@@ -37,6 +38,8 @@
   border-radius: 10px;
   background: white;
   box-shadow: 0 0 10px 0 #00000020;
+  position: sticky;
+  top: 0;
 }
 
 .conversation-container .main-body .conversation .room-details .inner {

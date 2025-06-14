@@ -13,6 +13,8 @@ export default function JoinRoom() {
   const [roomId, setRoomId] = useState("");
   const [joinMode, setJoinMode] = useState(false);
   const [roomExist, setRoomExist] = useState(null);
+  const [roomName, setRoomName] = useState("");
+  const [showRoomName, setShowRoomName] = useState(false);
   const hasCheckedRoom = useRef(false);
 
   useEffect(() => {
@@ -63,7 +65,9 @@ export default function JoinRoom() {
   }
 
   const handleNewRoomGeneration = async () => {
-    const response = await authFetch("/api/chat/create/room", "POST");
+    const response = await authFetch("/api/chat/create/room", "POST", {
+      roomName,
+    });
     notyf[response.status](response.message);
     const code = response.code;
     if (code == "created") {
@@ -183,12 +187,43 @@ export default function JoinRoom() {
                       </div>
                     </div>
                   ) : (
-                    <button
-                      className="w-100 btn btn-success"
-                      onClick={handleNewRoomGeneration}
-                    >
-                      Create New Room
-                    </button>
+                    <div className="d-flex gap-1">
+                      {showRoomName && (
+                        <input
+                          type="text"
+                          placeholder="Enter Room Name"
+                          className="form-control"
+                          value={roomName}
+                          onInput={(e) => {
+                            setRoomName(e.target.value);
+                          }}
+                        />
+                      )}
+                      <button
+                        className={`btn btn-success ${
+                          showRoomName ? "" : "w-100"
+                        }`}
+                        onClick={() => {
+                          if (showRoomName) {
+                            handleNewRoomGeneration();
+                          } else {
+                            setShowRoomName(true);
+                          }
+                        }}
+                      >
+                        {!showRoomName ? "Create New Room" : "Create"}
+                      </button>
+                      {showRoomName && (
+                        <button
+                          className="btn btn-danger"
+                          onClick={() => {
+                            setShowRoomName(false);
+                          }}
+                        >
+                          <span className="bi bi-x"></span>
+                        </button>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>

@@ -283,7 +283,7 @@ export default function Conversation() {
                 setRoomDetailVisibility((prev) => !prev);
               }}
             >
-              <img src={userRef.current.avatar} width={"100%"} />
+              <img src={roomData?.user?.avatar} width={"100%"} />
             </div>
             <div
               className="title"
@@ -379,11 +379,14 @@ export default function Conversation() {
               <div className="inner">
                 <div className="text-center">
                   <img
-                    src={userRef.current.avatar}
+                    src={roomData?.user?.avatar}
                     alt="Room Logo"
                     style={{ borderRadius: "50%" }}
                   />
                   <h3 className="mt-4">{roomData?.name}</h3>
+                  <p className="m-0">
+                    <b>{roomData?.user?.name}</b>
+                  </p>
                   <p className="lead" style={{ fontSize: "0.8rem" }}>
                     <span>{roomData?.email}</span>
                   </p>

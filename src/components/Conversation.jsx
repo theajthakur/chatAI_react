@@ -33,8 +33,8 @@ export default function Conversation() {
   useEffect(() => {
     authFetch("/api/chat/fetch/all", "POST", { roomId: roomid }).then(
       (data) => {
-        setMessages(
-          data.chats.map((aa) => {
+        setMessages([
+          ...data.chats.map((aa) => {
             const type =
               aa.user.email === userRef.current.email ? "send" : "receive";
             const time = new Date(aa.createdAt).toLocaleTimeString([], {
@@ -49,8 +49,14 @@ export default function Conversation() {
               time,
               user_logo: aa.user.avatar,
             };
-          })
-        );
+          }),
+          {
+            type: "announcement",
+            message: "Summary can be done for further conversation",
+            icon: "✨",
+            style: "warning",
+          },
+        ]);
       }
     );
   }, []);
@@ -408,6 +414,21 @@ export default function Conversation() {
                       </div>
                     </div>
                   );
+                } else if (message.type == "announcement") {
+                  return (
+                    <div className="chat-unit" key={key}>
+                      <div className="announcement">
+                        <div
+                          className={`d-flex gap-2 align-items-center justify-content-center text-${
+                            message.style || "warning"
+                          }`}
+                        >
+                          <p>{message.icon}</p>
+                          <p>{message.message}</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
                 } else {
                   return (
                     <div className="chat-unit" key={key}>
@@ -429,6 +450,17 @@ export default function Conversation() {
                   );
                 }
               })}
+              {!messages?.length && (
+                <div className="d-flex align-items-center justify-content-center h-100">
+                  <div className="text-center text-secondary">
+                    <span
+                      className="bi bi-chat-dots"
+                      style={{ fontSize: "5rem" }}
+                    ></span>
+                    <p>Send Message to Start a Chat</p>
+                  </div>
+                </div>
+              )}
             </div>
             <div
               className={`room-details ${

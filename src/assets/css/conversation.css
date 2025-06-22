@@ -24,7 +24,7 @@
 
 .conversation-container .main-body .conversation .body {
   flex: 1;
-  overflow-y: scroll;
+  overflow-y: hidden;
   display: flex;
   position: relative;
 }
@@ -49,6 +49,7 @@
 .conversation-container .main-body .conversation .chat-interface {
   width: 100%;
   padding: 20px;
+  overflow-y: scroll;
 }
 
 .conversation-container .main-body .conversation {

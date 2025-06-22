@@ -27,8 +27,15 @@ export default function Conversation() {
   const [showEmoji, setShowEmoji] = useState(false);
   const textareaRef = useRef(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
+  const bodyRef = useRef(null);
 
   let userRef = useRef({});
+
+  const scrollToBottom = () => {
+    if (bodyRef.current) {
+      bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
+    }
+  };
 
   useEffect(() => {
     authFetch("/api/chat/fetch/all", "POST", { roomId: roomid }).then(
@@ -336,7 +343,10 @@ export default function Conversation() {
                 setRoomDetailVisibility((prev) => !prev);
               }}
             >
-              <img src={roomData?.user?.avatar} width={"100%"} />
+              <img
+                src={`${apiURL}/get-google-img?url=${roomData?.user.avatar}`}
+                width={"100%"}
+              />
             </div>
             <div
               className="title"
@@ -372,7 +382,7 @@ export default function Conversation() {
             </div>
           </div>
           <div className="body px-2 py-3">
-            <div className="chat-interface">
+            <div className="chat-interface" ref={bodyRef}>
               {messages.map((message, key) => {
                 if (message.type == "user_join") {
                   return (
@@ -381,7 +391,7 @@ export default function Conversation() {
                         <div className="d-flex gap-2 align-items-center justify-content-center">
                           <div>
                             <img
-                              src={message.user.avatar}
+                              src={`${apiURL}/get-google-img?url=${message?.user.avatar}`}
                               alt="user icon"
                               width={20}
                               style={{ borderRadius: "50%" }}
@@ -401,7 +411,7 @@ export default function Conversation() {
                         <div className="d-flex gap-2 align-items-center justify-content-center">
                           <div>
                             <img
-                              src={message.user.avatar}
+                              src={`${apiURL}/get-google-img?url=${message?.user.avatar}`}
                               alt="user icon"
                               width={20}
                               style={{ borderRadius: "50%" }}
@@ -438,8 +448,9 @@ export default function Conversation() {
                             alt="User Avatar"
                             src={
                               message.type === "send"
-                                ? userRef.current.avatar || message.user_logo
-                                : message.user_logo
+                                ? `${apiURL}/get-google-img?url=${userRef?.current.avatar}` ||
+                                  `${apiURL}/get-google-img?url=${message?.user_logo}`
+                                : `${apiURL}/get-google-img?url=${message?.user_logo}`
                             }
                           />
                         </div>
@@ -450,6 +461,7 @@ export default function Conversation() {
                   );
                 }
               })}
+              {scrollToBottom()}
               {!messages?.length && (
                 <div className="d-flex align-items-center justify-content-center h-100">
                   <div className="text-center text-secondary">

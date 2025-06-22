@@ -8,6 +8,7 @@ import { useAuth } from "../context/AuthContext";
 
 export default function JoinRoom() {
   const { setIsLogin, setIsLoading, redirect, setRedirect } = useAuth();
+  const apiURL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [roomId, setRoomId] = useState("");
@@ -111,7 +112,7 @@ export default function JoinRoom() {
         <div className="p-4 body">
           <div className="text-center mb-4">
             <img
-              src={user.avatar}
+              src={`${apiURL}/get-google-img?url=${user.avatar}`}
               alt="avatar"
               className="rounded-circle mb-2"
               style={{ width: "80px", height: "80px", objectFit: "cover" }}
